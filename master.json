@@ -1,0 +1,36 @@
+{
+    "name": "master",
+    "children": [
+        {
+            "name": "Participedia",
+            "color": "#87ab34",
+            "size": 1000,
+            "children": [
+                {
+                    "name": "cases",
+                    "color": "#12ab12",
+                    "size": 1000,
+                    "children": [
+                      { "name": "Paris",
+                        "color": "yellow",
+                        "size": 20,
+                        "description": "<b>Paris</b> is an amazing city situated north of Madrid."
+                      }
+                    ]
+                },
+                {
+                    "name": "methods",
+                    "color": "#ab1212",
+                    "size": 100,
+                    "children": []
+                },
+                {
+                    "name": "organizations",
+                    "color": "#1212ab",
+                    "size": 100,
+                    "children": []
+                }
+            ]
+        }
+    ]
+}

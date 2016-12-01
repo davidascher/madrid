@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+  <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
+  <script type="text/javascript" src="//d3js.org/d3.v3.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="slick/slick.min.js"></script>
+  <style type="text/css">
+
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px
+}
+
+#box {
+  position: fixed;
+  right: 1em;
+  top: 1em;
+  width: 40%;
+  max-width: 40%;
+  max-height: 80%;  
+}
+
+#description {
+  font-size: 18px;
+  max-width: 40%;
+}
+
+#data {
+  width: 320px;
+  height: 400px;
+}
+
+#data img {
+  max-height: 320px;
+}
+
+#img,#audio {
+  padding-right: 1em;
+}
+
+h1#title {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node:hover {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node--leaf:hover {
+  /*fill: orangered;*/
+}
+
+
+.node--leaf {
+  /*fill: #14DCD2;*/
+}
+
+.label {
+  pointer-events: none;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.node--root,
+.node--leaf {
+  pointer-events: all;
+}
+</style>
+
+<script type='text/javascript'>
+
+window.onload=function(){
+
+var DEPTH = 0
+
+function showDetails(d) {
+  document.getElementById('title').innerText = d.name
+  if (d.description) {
+    document.getElementById('description').innerHTML = d.description
+  }
+  try {
+      $('#data').slick('unslick')
+  } catch (e) {
+  }
+  let dataElt = document.getElementById('data')
+  while (dataElt.firstChild) {
+    dataElt.removeChild(dataElt.firstChild);
+  }
+
+  if (d.name === "photos") {
+    let URLs = d.urls;
+    d.urls.forEach(function(url) {
+      let img = document.createElement('img')
+      img.src = "https://s3.amazonaws.com/audiomap/small/" + String(url).replace(' ', '+')
+      let div = document.createElement('div');
+      div.appendChild(img)
+      dataElt.appendChild(div)
+    })
+  }
+  $('#data').slick({
+    dots: true,
+    infinite: true,
+    speed: 300,
+    slidesToShow: 1,
+    // variableWidth: true,
+    responsiveHeight: true,
+  })
+}
+d3.json("master.json", function (error, root) {
+  if (error) {
+    console.log("ERROR", error);
+    throw error;
+  }
+  d3.json("data.json", function(error, data) {
+    if (error) {
+      console.log("ERROR", error);
+      throw error;
+    }
+
+    var margin = 50,
+    diameter = 800;
+
+    // var color = d3.scale.linear()
+    // .domain([-1, 5])
+    // .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+    // .interpolate(d3.interpolateHcl);
+
+  let color = d3.scale.category20c()
+
+    var pack = d3.layout.pack()
+    .padding(2)
+    .size([diameter - margin, diameter - margin])
+    .value(function(d) { return d.size; })
+
+    var svg = d3.select("body").append("svg")
+    .attr("width", diameter)
+    .attr("height", diameter)
+    .append("g")
+    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+    root['children'][0]['children'][0]['children'].push(data)
+    root = root['children'][0]
+
+    var focus = root,
+      nodes = pack.nodes(root),
+      view;
+
+    // console.log(root);
+    // console.log("DEPTH", DEPTH);
+    var circle = svg.selectAll("circle")
+      .data(nodes)
+    .enter().append("circle")
+      .attr("class", function(d) { 
+        var mainClass = d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"
+        return mainClass + ' ' + "depth-"+String(d.depth)
+      }) 
+        // return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+      .style("fill", function(d) {
+        if (d.color) return d.color
+        return color(d.depth) /* d.children ? color(d.depth) : null; */
+      })
+    .on("click", clickFct)
+
+    function clickFct(d,i) {
+      showDetails(d)
+      console.log("IN CLICKFCT", d.name, d, i)
+      if (d.depth > DEPTH + 2) { 
+        // console.log(d.depth, DEPTH, "TO DEEP, IGNORING IT")
+        return
+      }
+      // if (d3.select(this).classed("node--leaf")) {
+      if (focus !== d) {
+        zoom(d); 
+        d3.event.stopPropagation();
+      }
+    }
+      var text = svg.selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .attr("class", "label")
+        .style("fill-opacity", function(d) {
+          return d.parent === root ? 1 : 0;
+        })
+        .style("display", function(d) {
+          return d.parent === root ? null : "none"; 
+        })
+        .text(function(d) { 
+          console.log('d.name', d.name)
+          return d.name;
+        });
+
+      var node = svg.selectAll("circle,text")
+
+      node.each(function(d){
+      var thisNode = d3.select(this);
+      if (!d.children) {
+        thisNode.append("a")
+            // .attr("xlink:href", function(d) { return d.url; })
+            .append("text")
+                .attr("class","label")
+                .attr("dx", 8)
+                .attr("dy", 3)
+                .attr("text-anchor", "start")
+                .text(function(d) { return d.name; })
+                ;
+      } else {
+        thisNode.append("text")
+            .attr("class","label")
+            .attr("dx", -8)
+            .attr("dy", 3)
+            .attr("text-anchor", "end")
+            .text(function(d) { return d.name; });      
+        }
+
+        });
+
+      d3.select("body")
+      .style("background", color(2) /* '#17443d' */)
+      .on("dblclick", function() { zoom(root); });
+
+      zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+      function zoom(d) {
+        var focus0 = focus; focus = d;
+        DEPTH = d.depth
+        console.log("DEPTH", DEPTH)
+
+        var transition = d3.transition()
+          .duration(d3.event.altKey ? 7500 : 750)
+          .tween("zoom", function(d) {
+            var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 4 + margin]);
+            return function(t) { 
+              zoomTo(i(t));
+            };
+          });
+        // console.log("d.parent.name", d.parent.name, "focus.name", focus.name)
+
+        transition.selectAll("text")
+          .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+          .style("fill-opacity", function(d) {
+            return d.parent === focus ? 1 : 0; 
+          })
+          .each("start", function(d) {
+            if (d.parent === focus) this.style.display = "inline";
+          })
+          .each("end", function(d) {
+            if (d.parent !== focus) this.style.display = "none"; 
+          });
+      }
+
+      function zoomTo(v) {
+        var k = diameter / v[2]; view = v;
+        node.attr("transform", function(d) {
+          return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; 
+        });
+        circle.attr("r", function(d) { return d.r * k; });
+      }
+      d3.select(self.frameElement).style("height", diameter + "px");
+    })
+  })
+}
+
+
+
+</script>
+</head>
+<body>
+<h1 id="title"></h1>
+<div id="box">
+  <div id="description"/>
+  <div class="carousel"/>
+  <div id="data"/>
+</div>
+</body>
+</html>
+
