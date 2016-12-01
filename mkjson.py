@@ -14,7 +14,26 @@ def filter_junk(alist):
     and not os.path.basename(thing).startswith('Icon')) ]
 
 def process_photos(placename, timestamp):
-  thedir = os.path.join(PLACESDIR, placename, timestamp, 'PHOTOS') 
+  thedir = os.path.join(PLACESDIR, placename, timestamp, 'PHOTOS')
+  dirnames = os.listdir(thedir) 
+  # files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(thedir) for f in filenames]
+  # dirnames = [f[len(PLACESDIR)+1:] for f in filter_junk(files)]
+  for dirname in dirnames:
+    if dirname == "PAN PHOTOS":
+      process_panoramas(placename, timestamp, os.path.join(PLACESDIR, placename, timestamp, 'PHOTOS', "PAN PHOTOS"))
+    else:
+      process_nonpan_photos(placename, timestamp, dirname)
+
+def process_panoramas(placename, timestamp, dirname):
+  thedir = os.path.join(PLACESDIR, placename, timestamp, 'PHOTOS', dirname) 
+  files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(thedir) for f in filenames]
+  photonames = [f[len(PLACESDIR)+1:] for f in filter_junk(files)]
+  photonames = escapeSpaces(photonames)
+  bigdata[placename]['panoramas']['urls'].extend(photonames)
+  bigdata[placename]['panoramas']['size'] = len(photonames)
+
+def process_nonpan_photos(placename, timestamp, dirname):
+  thedir = os.path.join(PLACESDIR, placename, timestamp, 'PHOTOS', dirname) 
   files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(thedir) for f in filenames]
   photonames = [f[len(PLACESDIR)+1:] for f in filter_junk(files)]
   photonames = escapeSpaces(photonames)
@@ -55,6 +74,7 @@ def mkplace(placename):
   bigdata[placename] = {
     'name': placename,
     'photos': {'name': 'photos', 'size': 0, 'urls': []},
+    'panoramas': {'name': 'panoramas', 'size': 0, 'urls': []},
     'videos': {'name': 'videos', 'size': 0, 'urls': []},
     'audios': {'name': 'audios', 'size': 0, 'ENGLISH': [], 'SPANISH': []}
   }
@@ -67,6 +87,7 @@ def mkplace(placename):
       'children': [
         bigdata[placename]['photos'],
         bigdata[placename]['audios'],
+        bigdata[placename]['panoramas'],
         bigdata[placename]['videos']
       ]
     }

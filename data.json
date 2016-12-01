@@ -27,6 +27,11 @@
                     "size": 1
                 },
                 {
+                    "name": "panoramas",
+                    "size": 0,
+                    "urls": []
+                },
+                {
                     "name": "videos",
                     "size": 0,
                     "urls": []
@@ -58,6 +63,11 @@
                     "SPANISH": [],
                     "name": "audios",
                     "size": 0
+                },
+                {
+                    "name": "panoramas",
+                    "size": 0,
+                    "urls": []
                 },
                 {
                     "name": "videos",
@@ -92,6 +102,11 @@
                     "size": 3
                 },
                 {
+                    "name": "panoramas",
+                    "size": 0,
+                    "urls": []
+                },
+                {
                     "name": "videos",
                     "size": 0,
                     "urls": []
@@ -103,17 +118,8 @@
             "children": [
                 {
                     "name": "photos",
-                    "size": 24,
+                    "size": 15,
                     "urls": [
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1316.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1317.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1318.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1323.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1325.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1326.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1331.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1335.jpg",
-                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1337.jpg",
                         "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PHOTOS+NORMAL/IMG_1314.jpg",
                         "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PHOTOS+NORMAL/IMG_1315.jpg",
                         "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PHOTOS+NORMAL/IMG_1319.jpg",
@@ -142,6 +148,21 @@
                     "size": 2
                 },
                 {
+                    "name": "panoramas",
+                    "size": 9,
+                    "urls": [
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1316.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1317.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1318.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1323.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1325.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1326.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1331.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1335.jpg",
+                        "Mercado+San+Fernando+-+Embajadores,+41/NOV+23+2016/PHOTOS/PAN+PHOTOS/IMG_1337.jpg"
+                    ]
+                },
+                {
                     "name": "videos",
                     "size": 0,
                     "urls": []
@@ -153,7 +174,7 @@
             "children": [
                 {
                     "name": "photos",
-                    "size": 22,
+                    "size": 5,
                     "urls": [
                         "Teatro+Del+Barrio+-+Zurita,+20/NOV+24+2016/PHOTOS/NORMAL+PHOTO/IMG_0503.jpg",
                         "Teatro+Del+Barrio+-+Zurita,+20/NOV+24+2016/PHOTOS/NORMAL+PHOTO/IMG_0504.jpg",
@@ -184,6 +205,11 @@
                     "SPANISH": [],
                     "name": "audios",
                     "size": 0
+                },
+                {
+                    "name": "panoramas",
+                    "size": 0,
+                    "urls": []
                 },
                 {
                     "name": "videos",

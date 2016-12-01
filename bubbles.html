@@ -69,9 +69,11 @@ h1#title {
 }
 
 .label {
+  font-size: 18px;
+  color: whitesmoke;
   pointer-events: none;
   text-anchor: middle;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+  /*text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;*/
 }
 
 .node--root,
@@ -96,10 +98,11 @@ function showDetails(d) {
   } catch (e) {
   }
   let dataElt = document.getElementById('data')
-  while (dataElt.firstChild) {
-    dataElt.removeChild(dataElt.firstChild);
+  if (dataElt) {
+    while (dataElt.firstChild) {
+      dataElt.removeChild(dataElt.firstChild);
+    }
   }
-
   if (d.name === "photos") {
     let URLs = d.urls;
     d.urls.forEach(function(url) {
@@ -119,7 +122,7 @@ function showDetails(d) {
     responsiveHeight: true,
   })
 }
-d3.json("master.json", function (error, root) {
+d3.json("bulk.json", function (error, root) {
   if (error) {
     console.log("ERROR", error);
     throw error;
@@ -138,7 +141,14 @@ d3.json("master.json", function (error, root) {
     // .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     // .interpolate(d3.interpolateHcl);
 
-  let color = d3.scale.category20c()
+  // let color = d3.scale.category10b()
+  // let color = d3.schemeSpectral
+    // let colorrange = ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"]
+    let colorrange = ["#fff7f3","#fde0dd","#fcc5c0","#fa9fb5","#f768a1","#dd3497","#ae017e","#7a0177","#49006a"]
+  // ["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]  
+    let color = function(index) {
+      return colorrange[index+1]
+    }
 
     var pack = d3.layout.pack()
     .padding(2)
@@ -150,9 +160,10 @@ d3.json("master.json", function (error, root) {
     .attr("height", diameter)
     .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+    console.log(root['children'][2])
 
-    root['children'][0]['children'][0]['children'].push(data)
-    root = root['children'][0]
+    root['children'][2]['children'].push(data)
+    // root = root['children'][0]
 
     var focus = root,
       nodes = pack.nodes(root),
@@ -167,16 +178,26 @@ d3.json("master.json", function (error, root) {
         var mainClass = d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"
         return mainClass + ' ' + "depth-"+String(d.depth)
       }) 
+      // This bit only shows a subset of the discs
+      .filter(function(d) { 
+        if (d.depth <= DEPTH+2) {
+          this.style.display = "inline";
+        } else {
+          this.style.display = "none";
+        }
+        return true
+      })
+      // this.style.display === "inline";
         // return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
       .style("fill", function(d) {
-        if (d.color) return d.color
+        // if (d.color) return d.color
         return color(d.depth) /* d.children ? color(d.depth) : null; */
       })
     .on("click", clickFct)
 
     function clickFct(d,i) {
       showDetails(d)
-      console.log("IN CLICKFCT", d.name, d, i)
+      // console.log("IN CLICKFCT", d.name, d, i)
       if (d.depth > DEPTH + 2) { 
         // console.log(d.depth, DEPTH, "TO DEEP, IGNORING IT")
         return
@@ -194,11 +215,13 @@ d3.json("master.json", function (error, root) {
         .style("fill-opacity", function(d) {
           return d.parent === root ? 1 : 0;
         })
+        .style("fill", function(d) {
+          return 'white'
+        })
         .style("display", function(d) {
           return d.parent === root ? null : "none"; 
         })
         .text(function(d) { 
-          console.log('d.name', d.name)
           return d.name;
         });
 
@@ -236,7 +259,6 @@ d3.json("master.json", function (error, root) {
       function zoom(d) {
         var focus0 = focus; focus = d;
         DEPTH = d.depth
-        console.log("DEPTH", DEPTH)
 
         var transition = d3.transition()
           .duration(d3.event.altKey ? 7500 : 750)
@@ -246,19 +268,60 @@ d3.json("master.json", function (error, root) {
               zoomTo(i(t));
             };
           });
-        // console.log("d.parent.name", d.parent.name, "focus.name", focus.name)
 
         transition.selectAll("text")
-          .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+          .filter(function(d) { 
+            if ((d.children) && (d.children.length < 10)) {
+              this.style.display = "inline";
+              return true
+            } else {
+              this.style.display = "none";
+              return true
+            }
+          })
           .style("fill-opacity", function(d) {
-            return d.parent === focus ? 1 : 0; 
+            return (d === focus || d.parent === focus) ? 1 : 0; 
+          })
+          .style("fill", function(d) {
+            return (d.parent === focus) ? 'black' : 'white'; 
           })
           .each("start", function(d) {
-            if (d.parent === focus) this.style.display = "inline";
+            if (d === focus || d.parent === focus) this.style.display = "inline";
           })
           .each("end", function(d) {
-            if (d.parent !== focus) this.style.display = "none"; 
+            if (d !== focus && d.parent !== focus) this.style.display = "none"; 
           });
+
+        transition.selectAll("circle")
+          .filter(function(d) {
+            if (d.depth <= DEPTH+1) {
+              this.style.display = "inline";
+            } else {
+              this.style.display = "none";
+            }
+            return true
+            // return d.depth <= DEPTH+1 || this.style.display === "inline";
+          })
+        //   .filter(function(d) { 
+        //     // return d.parent === focus || this.style.display === "inline";
+        //     return d.depth <= DEPTH || this.style.display === "inline";
+        //   })
+        //   .style("fill-opacity", function(d) {
+        //     console.log(d.name, d.depth, DEPTH+1)
+        //     // return d.depth === DEPTH+1 ? 1 : 0
+        //     return d.parent === focus ? 1 : 0; 
+        //   })
+        //   // .style("fill", function(d) {
+        //   //   return d.parent === focus ? 'black' : 'white'; 
+        //   // })
+        //   .each("start", function(d) {
+        //     if (d.depth === DEPTH+1) this.style.display = "inline";
+        //   })
+        //   .each("end", function(d) {
+        //     if (d.depth === DEPTH) this.style.display = "inline" 
+        //     // this.style.display = 'none' 
+        //   });
+
       }
 
       function zoomTo(v) {
