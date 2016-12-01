@@ -49,7 +49,6 @@ body {
   right: 1em;
   top: 1em;
   width: 40%;
-  /*max-width: 40%;*/
   max-height: 80%;  
 }
 
@@ -62,6 +61,8 @@ body {
 
 #description {
   font-size: 18px;
+  overflow-y: auto;
+
   /*max-width: 40%;*/
 }
 
@@ -230,7 +231,10 @@ function clearAudio() {
 function showDetails(d) {
   document.getElementById('title').innerText = d.name
   if (d.description) {
+    clearVisuals()
     document.getElementById('description').innerHTML = d.description
+  } else {
+    document.getElementById('description').innerHTML = ''
   }
   if (d.name === "photos") {
     clearVisuals()
@@ -257,12 +261,12 @@ function hideHover(d) {
 
 d3.json("bulk.json", function (error, root) {
   if (error) {
-    console.log("ERROR", error);
+    console.log("ERROR", error, "loading bulk.json");
     throw error;
   }
   d3.json("data.json", function(error, data) {
     if (error) {
-      console.log("ERROR", error);
+      console.log("ERROR", error, "loading data.json");
       throw error;
     }
 
@@ -294,7 +298,6 @@ d3.json("bulk.json", function (error, root) {
     .attr("height", diameter)
     .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
-    console.log(root['children'][2])
 
     root['children'][2]['children'].push(data)
 
@@ -327,7 +330,6 @@ d3.json("bulk.json", function (error, root) {
     .on("mouseover", function(d, e) {
         let coords = [0,0]
         coords= d3.mouse(this);
-        console.log(d3.event.x, d3.event.y);
         document.getElementById('hover').style.left = d3.event.x + 'px';
         document.getElementById('hover').style.top = d3.event.y + 'px';
         if (d) {
@@ -443,6 +445,7 @@ d3.json("bulk.json", function (error, root) {
           })
           .each("start", function(d) {
             if (d === focus) this.style.display = "inline";
+            if (d.depth === 1) this.style.display = "inline";
           })
           .each("end", function(d) {
             if (d !== focus && d.parent !== focus) this.style.display = "none"; 
@@ -498,14 +501,14 @@ d3.json("bulk.json", function (error, root) {
 </head>
 <body>
 <h1 id="title"></h1>
-<div id="box">
-  <div id="description" />
-  <div id="data" />
-</div>
-<div id="audio" />
 <div id="hover">
   <p id="thing" />
 </div>
+<div id="box">
+  <div id="description" ></div>
+  <div id="data" />
+</div>
+<div id="audio" />
 </body>
 </html>
 
