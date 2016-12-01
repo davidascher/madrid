@@ -48,6 +48,7 @@ def process_audios(placename, timestamp):
     languagedir = os.path.normpath(os.path.join(PLACESDIR, placename, timestamp, 'AUDIO', language))
     if os.path.isdir(languagedir):
       audios = [os.path.normpath(os.path.join(languagedir, f)) for f in filter_junk(os.listdir(languagedir))]
+      audios = [audio for audio in audios if audio.startswith('_')]
       audios = [f[len(PLACESDIR)+1:] for f in audios]
       bigdata[placename]['audios'][language].extend(audios)
       bigdata[placename]['audios']['size'] += len(audios)

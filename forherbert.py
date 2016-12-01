@@ -10,7 +10,7 @@ for thing in json.loads(open('./organizations.json').read()):
   thing = {
     'name': thing.get('title_en', ''),
     'children': [],
-    'size': random.randint(10,30)
+    'size': random.randint(10,50)
   }
   orgs.append(thing)
 
@@ -18,7 +18,7 @@ for thing in json.loads(open('./methods.json').read()):
   thing = {
     'name': thing.get('title_en', ''),
     'children': [],
-    'size': random.randint(10,30)
+    'size': random.randint(10,50)
   }
   methods.append(thing)
 
@@ -26,7 +26,7 @@ for thing in json.loads(open('./cases.json').read()):
   thing = {
     'name': thing.get('title_en', ''),
     'children': [],
-    'size': random.randint(10,30)
+    'size': random.randint(10,50)
   }
   cases.append(thing)
 

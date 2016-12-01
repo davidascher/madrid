@@ -26,6 +26,16 @@
   </style>
   <style type="text/css">
 
+svg {
+} 
+
+#hover {
+  position: fixed;
+  background-color: rgba(255,255,255,.4);
+  padding: 1ex 1em;
+  border-radius: 3px;
+  pointer-events: none;
+}
 
 body {
   padding: 0;
@@ -82,7 +92,7 @@ h1#title {
 }
 
 .node:hover {
-  stroke: #000;
+  stroke: #7a0177;
   stroke-width: 1.5px;
 }
 
@@ -120,6 +130,7 @@ h1#title {
 window.onload=function(){
 
 var DEPTH = 0
+var focus;
 let dataElt = document.getElementById('data')
 let audioElt = document.getElementById('audio')
 
@@ -143,7 +154,6 @@ function displayAudios(d) {
       displayText: 'Spanish: ' + url.substring(url.lastIndexOf('/')+1)
     })
   })
-  console.log("rendering a playlist", playlist)
   try {
     ReactDOM.render(
       React.createElement(AudioPlayer, {
@@ -235,6 +245,16 @@ function showDetails(d) {
   }
 
 }
+let hoverElt = document.getElementById('hover'); 
+
+function showHover(d) {
+  if (d.depth === 2 && d !== focus)
+    hoverElt.style.display = 'block';
+}
+function hideHover(d) {
+  hoverElt.style.display = 'none';
+}
+
 d3.json("bulk.json", function (error, root) {
   if (error) {
     console.log("ERROR", error);
@@ -277,14 +297,11 @@ d3.json("bulk.json", function (error, root) {
     console.log(root['children'][2])
 
     root['children'][2]['children'].push(data)
-    // root = root['children'][0]
 
-    var focus = root,
-      nodes = pack.nodes(root),
-      view;
+    focus = root
+    var nodes = pack.nodes(root);
+    var view;
 
-    // console.log(root);
-    // console.log("DEPTH", DEPTH);
     var circle = svg.selectAll("circle")
       .data(nodes)
     .enter().append("circle")
@@ -307,6 +324,25 @@ d3.json("bulk.json", function (error, root) {
         // if (d.color) return d.color
         return color(d.depth) /* d.children ? color(d.depth) : null; */
       })
+    .on("mouseover", function(d, e) {
+        let coords = [0,0]
+        coords= d3.mouse(this);
+        console.log(d3.event.x, d3.event.y);
+        document.getElementById('hover').style.left = d3.event.x + 'px';
+        document.getElementById('hover').style.top = d3.event.y + 'px';
+        if (d) {
+          document.getElementById('thing').innerHTML = d.name;
+        } else {
+          document.getElementById('thing').innerHTML = '';
+        }
+    })
+
+    .on("mouseenter", function(d) {
+      showHover(d)
+    })
+    .on("mouseleave", function(d) {
+      hideHover(d)
+    })
     .on("click", clickFct)
 
     function clickFct(d,i) {
@@ -374,7 +410,8 @@ d3.json("bulk.json", function (error, root) {
       zoomTo([root.x, root.y, root.r * 2 + margin]);
 
       function zoom(d) {
-        var focus0 = focus; focus = d;
+        var focus0 = focus;
+        focus = d;
         DEPTH = d.depth
 
         var transition = d3.transition()
@@ -466,6 +503,9 @@ d3.json("bulk.json", function (error, root) {
   <div id="data" />
 </div>
 <div id="audio" />
+<div id="hover">
+  <p id="thing" />
+</div>
 </body>
 </html>
 
